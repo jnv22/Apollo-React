@@ -1,48 +1,58 @@
-import React, { Component } from 'react'
-import { gql } from 'apollo-boost'
-import { Query } from 'react-apollo'
-import moment from 'moment'
-import logo from '../logo.svg'
-import '../styles/App.css'
-import List from '../components/List'
+import React, { Component } from 'react';
+import { gql } from 'apollo-boost';
+import { Query } from 'react-apollo';
+import moment from 'moment';
+import './styles.css';
+import List from '../components/List';
+import Search from '../components/Search';
 
 class App extends Component {
-
-  getAllDates = (items) => {
-    return [...new Set(items.map(item => {
-      return moment(item.node.committedDate).format("MMMM Do YYYY");
-    }))]
+  constructor(props) {
+    super(props);
+    this.timeFormat = 'MMMM DD, YYYY';
   }
+
+  getAllDates = items => [...new Set(items.map(item => moment(item.node.committedDate).format(this.timeFormat)))];
+
+  query = () => null;
+
   render() {
     return (
       <div className="App">
-          <img src={logo} className="App-logo" alt="logo" />
-          <Query query={HELLO_QUERY}>
-            {props => {
-              console.log(props)
-              const { data, loading, error, refetch } = props
-              return (
-                <div>
-                  {
-                    props.data.repository ? 
-                    <List 
-                    historyItems={props.data.repository.ref.target.history.edges}
-                    dates={this.getAllDates(props.data.repository.ref.target.history.edges)}
-                    />: null
-                  }
-                  </div>
-              )
-            }}
-          </Query>
+        <Query query={HELLO_QUERY}>
+          {((props) => {
+            const { data, loading, error } = props;
+            if (loading) {
+              return <div>Loading</div>;
+            }
+
+            if (error) {
+              return <div>An unexpected error occurred</div>;
+            }
+            return (
+              <div>
+                <Search onChange={this.query} />
+                {
+                  data.repository ?
+                    <List
+                      historyItems={data.repository.ref.target.history.edges}
+                      timeFormat={this.timeFormat}
+                      dates={this.getAllDates(data.repository.ref.target.history.edges)}
+                    /> : null
+                }
+              </div>
+            );
+          })}
+        </Query>
       </div>
-    )
+    );
   }
 }
 
 const HELLO_QUERY = gql`
 {
   repository(owner: "facebook", name: "create-react-app") {
-    ref(qualifiedName: "master") {
+    ref(qualifiedName: "next") {
       target {
         ... on Commit {
           id
@@ -54,8 +64,9 @@ const HELLO_QUERY = gql`
                 message
                 committedDate
                 author {
-                  name
-                  email
+                  user {
+                    login
+                  }
                 }
               }
             }
@@ -65,5 +76,6 @@ const HELLO_QUERY = gql`
     }
   }
 }
-`
-export default App
+`;
+
+export default App;

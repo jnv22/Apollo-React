@@ -1,59 +1,37 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import '../src/styles/index.css'
-import App from '../src/containers/App'
-import { ApolloProvider } from 'react-apollo'
-import ApolloClient from 'apollo-boost'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { ApolloProvider } from 'react-apollo';
+import ApolloClient from 'apollo-boost';
+
+import App from '../src/containers/App';
+import { TOKEN } from './config';
 
 const client = new ApolloClient({
   uri: 'https://api.github.com/graphql',
   fetchOptions: {
-    credentials: 'include'
+    credentials: 'include',
   },
   request: async (operation) => {
-    const token = ''
     operation.setContext({
       headers: {
-        Authorization: `bearer ${token}`
-      }
+        Authorization: `bearer ${TOKEN}`,
+      },
     });
   },
   onError: ({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
-      console.log(graphQLErrors);
+      console.error(graphQLErrors); // eslint-disable-line no-console
     }
     if (networkError) {
-      console.log(networkError);
+      console.error(networkError); // eslint-disable-line no-console
     }
   },
-  // clientState: {
-  //   defaults: {
-  //     isConnected: true
-  //   },
-  //   resolvers: {
-  //     Mutation: {
-  //       updateNetworkStatus: (_, { isConnected }, { cache }) => {
-  //         cache.writeData({ data: { isConnected }});
-  //         return null;
-  //       }
-  //     }
-  //   }
-  // },
-  cacheRedirects: {
-    Query: {
-      getDates: (_, args, { getCacheKey }) => {
-        console.log(args);
-        args.repository.ref.target.history.map(item => 
-          getCacheKey({ '__typename': 'GitTimestamp', date: item.id }))
-      }
-    },
-  }
 });
 
-//Apollo Client
+// Apollo Client
 ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
   document.getElementById('root'),
-)
+);

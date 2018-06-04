@@ -1,0 +1,27 @@
+.listItem__container {
+  border-top: 1px solid #e1e4e8;
+  border-left: 1px solid #e1e4e8;
+  border-right: 1px solid #e1e4e8;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: space-around
+}
+
+.listItem__container:last-child {
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.listItem__commitMessage {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.listItem__commitUser {
+  font-size: 12px;
+  padding-top: 10px;
+  font-weight: 400;
+  color: #586069;
+}
