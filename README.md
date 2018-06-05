@@ -17,5 +17,5 @@ Web App that uses GraphQL to pull commit history from the Github API
   ```
 * Run the application
   ```
-  npm run start
+  npm start
   ```
